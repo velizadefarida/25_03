@@ -1,5 +1,6 @@
 #ifndef PE_VECTOR_HPP
-#DEFINE PE_VECTOR_HPP
+#define PE_VECTOR_HPP
+
 namespace knk
 {
   template< class T >
@@ -8,10 +9,23 @@ namespace knk
     Vector();
     ~Vector();
 
+    bool isEmpty() const noexcept;
+
    private:
     T* data;
     size_t size, capacity;
   };
 }
+
+template< class T >
+knk::Vector< T >::~Vector() {
+  delete [] data_;
+}
+template< class T >
+knk::Vector< T >::Vector() :
+  data_(nullptr),
+  size_(0),
+  capacity_(0)
+{}
 
 #endif
