@@ -1,4 +1,4 @@
-#ifndef PE_VECTOR_HPP
+\#ifndef PE_VECTOR_HPP
 #define PE_VECTOR_HPP
 #include <cstddef>
 
@@ -10,8 +10,8 @@ namespace knk {
     Vector();
     Vector(const Vector< T >& rhs) = delete;
     Vector(size_t size, const T& value);
-
     Vector< T >& operator=(const Vector< T >& rhs) = delete;
+    explicit Vector(size_t size);
 
     bool isEmpty() const noexcept;
     size_t getSize() const noexcept;
@@ -25,9 +25,16 @@ namespace knk {
 }
 
 template< class T >
+knk::Vector< T >::Vector(size_t size):
+  data_(size ? new T[size] : nullptr),
+  size_(size),
+  capacity_(size)
+{}
+
+template< class T >
 knk::Vector< T >::Vector(size_t size, const T& value):
   data_(size ? new T[size] : nullptr),
-  size_(0),
+  size_(size),
   capacity_(size)
 {
   for (size_t i = 0; i < size; ++i) {
