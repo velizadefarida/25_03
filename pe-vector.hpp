@@ -4,7 +4,6 @@
 
 namespace knk
 {
-  template< class T >
   class Vector {
    public:
     ~Vector();
@@ -14,13 +13,13 @@ namespace knk
     size_t getSize() const noexcept;
 
    private:
-    T* data;
+    T* data_;
     size_t size_, capacity_;
   };
 }
 template< class T >
 size_t knk::Vector< T > ::getSize() const noexcept {
-  return -1;
+  return size_;
 }
 template< class T >
 bool knk::Vector< T >::isEmpty() const noexcept {
