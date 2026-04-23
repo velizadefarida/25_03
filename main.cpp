@@ -189,9 +189,21 @@ bool testSwap(const char ** pname) {
          v2.getSize() == 2 && v2[0] == 1 && v2[1] == 2;
 }
 
+bool testPushFront(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{2, 3};
+  v.pushFront(1);
+  return v.getSize() == 3 && v[0] == 1 && v[1] == 2 && v[2] == 3;
+}
+
 int main() {
   using test_t = bool(*)(const char **);
-  using case_t = std::pair< test_t, const char * >;
+ bool testPushFront(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{2, 3};
+  v.pushFront(1);
+  return v.getSize() == 3 && v[0] == 1 && v[1] == 2 && v[2] == 3;
+} using case_t = std::pair< test_t, const char * >;
   case_t tests[] = {
     { testConstructAndDestruct, "Vector must be default constructable" },
     { testDefaultVectorIsEmpty, "Default constructed vector must be empty" },
@@ -212,7 +224,8 @@ int main() {
     { testCopyAssignment, "Copy assignment must copy all elements" },
     { testMoveAssignment, "Move assignment must transfer ownership" },
     { testSubscriptOperator, "operator[] must allow read/write access" },
-    { testSwap, "swap must exchange contents" }
+    { testSwap, "swap must exchange contents" },
+    { testPushFront, "pushFront must insert at beginning" }
 };
   constexpr size_t count = sizeof(tests) / sizeof(case_t);
   size_t failed = 0;
