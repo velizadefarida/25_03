@@ -196,6 +196,35 @@ bool testPushFront(const char ** pname) {
   return v.getSize() == 3 && v[0] == 1 && v[1] == 2 && v[2] == 3;
 }
 
+bool testInsertSingle(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 3};
+  v.insert(1, 2);
+  return v.getSize() == 3 && v[0] == 1 && v[1] == 2 && v[2] == 3;
+}
+
+bool testInsertRange(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 5};
+  Vector<int> src{2, 3, 4};
+  v.insert(1, src, 0, 3);
+  return v.getSize() == 5 && v[0] == 1 && v[1] == 2 && v[2] == 3 && v[3] == 4 && v[4] == 5;
+}
+
+bool testEraseSingle(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 2, 3};
+  v.erase(1);
+  return v.getSize() == 2 && v[0] == 1 && v[1] == 3;
+}
+
+bool testEraseRange(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 2, 3, 4, 5};
+  v.erase(1, 4);
+  return v.getSize() == 2 && v[0] == 1 && v[1] == 5;
+}
+
 int main() {
   using test_t = bool(*)(const char **);
  bool testPushFront(const char ** pname) {
@@ -226,6 +255,10 @@ int main() {
     { testSubscriptOperator, "operator[] must allow read/write access" },
     { testSwap, "swap must exchange contents" },
     { testPushFront, "pushFront must insert at beginning" }
+    { testInsertSingle, "insert single element at index" },
+    { testInsertRange, "insert range from another vector" },
+    { testEraseSingle, "erase single element by index" },
+    { testEraseRange, "erase range of indices" }
 };
   constexpr size_t count = sizeof(tests) / sizeof(case_t);
   size_t failed = 0;
