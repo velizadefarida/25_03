@@ -8,6 +8,9 @@ namespace knk {
   template< class T >
   class Vector {
    public:
+    using iterator = T*;
+    using const_iterator = const T*;
+
     Vector();
     ~Vector();
 
@@ -40,6 +43,17 @@ namespace knk {
     void insert(size_t id, const Vector<T>& rhs, size_t beg, size_t end);
     void erase(size_t id);
     void erase(size_t beg, size_t end);
+
+    iterator begin() noexcept { return data_; }
+    const_iterator begin() const noexcept { return data_; }
+    iterator end() noexcept { return data_ + size_; }
+    const_iterator end() const noexcept { return data_ + size_; }
+
+    iterator insert(iterator pos, const T& rhs);
+    template<class InputIt>
+    iterator insert(iterator pos, InputIt first, InputIt last);
+    iterator erase(iterator pos);
+    iterator erase(iterator first, iterator last);
 
    private:
     T* data_;
@@ -252,6 +266,58 @@ void knk::Vector< T >::erase(size_t beg, size_t end) {
   size_t count = end - beg;
   for (size_t i = beg; i < size_ - count; ++i) data_[i] = std::move(data_[i + count]);
   size_ -= count;
+}
+
+template< class T >
+typename knk::Vector< T >::iterator knk::Vector< T >::insert(iterator pos, const T& rhs) {
+  size_t index = pos - begin();
+  insert(index, rhs);
+  return begin() + index;
+}
+
+template< class T >
+template< class InputIt >
+typename knk::Vector< T >::iterator knk::Vector< T >::insert(iterator pos, InputIt first, InputIt last) {
+  size_t index = pos - begin();
+  size_t count = 0;
+  for (InputIt it = first; it != last; ++it)
+  if (count == 0) return begin() + index;
+  if (size_ + count > capacity_) {
+    size_t newCapacity = size_ + count;
+    if (newCapacity < capacity_ * 2) newCapacity = capacity_ * 2;
+    T* newData = new T[newCapacity];
+    try {
+      for (size_t i = 0; i < size_; ++i) newData[i] = std::move(data_[i]);
+    } catch (...) {
+      delete[] newData;
+      throw;
+    }
+    delete[] data_;
+    data_ = newData;
+    capacity_ = newCapacity;
+  }
+  for (size_t i = size_; i > index; --i)
+    data_[i + count - 1] = std::move(data_[i - 1]);
+  InputIt it = first;
+  for (size_t i = 0; i < count; ++i, ++it)
+    data_[index + i] = *it;
+  size_ += count;
+  return begin() + index;
+}
+
+template< class T >
+typename knk::Vector< T >::iterator knk::Vector< T >::erase(iterator pos) {
+  size_t index = pos - begin();
+  erase(index);
+  return begin() + index;
+}
+
+template< class T >
+typename knk::Vector< T >::iterator knk::Vector< T >::erase(iterator first, iterator last) {
+  size_t beg = first - begin();
+  size_t end = last - begin();
+  erase(beg, end);
+  return begin() + beg;
 }
 
 #endif

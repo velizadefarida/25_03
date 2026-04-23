@@ -225,6 +225,35 @@ bool testEraseRange(const char ** pname) {
   return v.getSize() == 2 && v[0] == 1 && v[1] == 5;
 }
 
+bool testIteratorInsertValue(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 3};
+  auto it = v.insert(v.begin() + 1, 2);
+  return v.getSize() == 3 && *it == 2 && v[0] == 1 && v[1] == 2 && v[2] == 3;
+}
+
+bool testIteratorInsertRange(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 5};
+  int arr[] = {2, 3, 4};
+  v.insert(v.begin() + 1, std::begin(arr), std::end(arr));
+  return v.getSize() == 5 && v[0] == 1 && v[1] == 2 && v[2] == 3 && v[3] == 4 && v[4] == 5;
+}
+
+bool testIteratorEraseSingle(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 2, 3};
+  auto it = v.erase(v.begin() + 1);
+  return v.getSize() == 2 && v[0] == 1 && v[1] == 3 && *it == 3;
+}
+
+bool testIteratorEraseRange(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{1, 2, 3, 4, 5};
+  auto it = v.erase(v.begin() + 1, v.begin() + 4);
+  return v.getSize() == 2 && v[0] == 1 && v[1] == 5 && *it == 5;
+}
+
 int main() {
   using test_t = bool(*)(const char **);
  bool testPushFront(const char ** pname) {
@@ -259,6 +288,10 @@ int main() {
     { testInsertRange, "insert range from another vector" },
     { testEraseSingle, "erase single element by index" },
     { testEraseRange, "erase range of indices" }
+    { testIteratorInsertValue, "insert(iterator, value)" },
+    { testIteratorInsertRange, "insert(iterator, first, last)" },
+    { testIteratorEraseSingle, "erase(iterator)" },
+    { testIteratorEraseRange, "erase(first, last)" }
 };
   constexpr size_t count = sizeof(tests) / sizeof(case_t);
   size_t failed = 0;
