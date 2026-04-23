@@ -144,6 +144,51 @@ bool testElementCheckedOutOfBoundConstAccess(const char ** pname) {
   }
 }
 
+bool testMoveConstructor(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v1{1, 2, 3};
+  Vector<int> v2 = std::move(v1);
+  return v2.getSize() == 3 && v2[0] == 1 && v2[1] == 2 && v2[2] == 3 &&
+         v1.getSize() == 0 && v1.getCapacity() == 0;
+}
+
+bool testCopyAssignment(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v1{1, 2, 3};
+  Vector<int> v2;
+  v2 = v1;
+  if (v1.getSize() != v2.getSize()) return false;
+  for (size_t i = 0; i < v1.getSize(); ++i)
+    if (v1[i] != v2[i]) return false;
+  return true;
+}
+
+bool testMoveAssignment(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v1{4, 5, 6};
+  Vector<int> v2;
+  v2 = std::move(v1);
+  return v2.getSize() == 3 && v2[0] == 4 && v2[1] == 5 && v2[2] == 6 &&
+         v1.getSize() == 0 && v1.getCapacity() == 0;
+}
+
+bool testSubscriptOperator(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v{10, 20, 30};
+  v[1] = 99;
+  const Vector<int>& cv = v;
+  return v[0] == 10 && v[1] == 99 && v[2] == 30 && cv[1] == 99;
+}
+
+bool testSwap(const char ** pname) {
+  *pname = __func__;
+  Vector<int> v1{1, 2};
+  Vector<int> v2{3, 4, 5};
+  v1.swap(v2);
+  return v1.getSize() == 3 && v1[0] == 3 && v1[1] == 4 && v1[2] == 5 &&
+         v2.getSize() == 2 && v2[0] == 1 && v2[1] == 2;
+}
+
 int main() {
   using test_t = bool(*)(const char **);
   using case_t = std::pair< test_t, const char * >;
@@ -163,6 +208,11 @@ int main() {
     { testCopyConstructor, "Copied vector must be equal to original" },
     { testElementCheckedConstAccess, "Same as ElementCheckedAccess, but const" },
     { testElementCheckedOutOfBoundConstAccess, "Same as ElementCheckedOutOfBoundAccess, but const" }
+    { testMoveConstructor, "Move constructor transfers ownership" },
+    { testCopyAssignment, "Copy assignment must copy all elements" },
+    { testMoveAssignment, "Move assignment must transfer ownership" },
+    { testSubscriptOperator, "operator[] must allow read/write access" },
+    { testSwap, "swap must exchange contents" }
 };
   constexpr size_t count = sizeof(tests) / sizeof(case_t);
   size_t failed = 0;
